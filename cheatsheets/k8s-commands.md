@@ -1,71 +1,159 @@
-This guide covers essential Kubernetes (K8s) concepts and kubectl commands for beginners. Focuses on nodes, pods, and basic cluster management.
+# Kubernetes Basic Commands
 
-K8s Architecture Overview
-Worker Nodes: Run application workloads (containers/pods). Use multiple for high availability and scaling.
+This README gives a beginner-friendly overview of Kubernetes nodes, `kubectl`, and a set of common commands used to inspect and manage resources in a cluster. `kubectl` is the Kubernetes command-line tool used to deploy applications, inspect cluster resources, and troubleshoot workloads.[1][2]
 
-Master Node: Controls the cluster, schedules pods, and monitors all worker nodes.
+## Kubernetes Basics
 
-Kubectl: Primary CLI tool to deploy, inspect, and manage apps on the cluster.
+### Nodes
 
-Quick Setup
-Create a shortcut for faster typing:
+A Kubernetes cluster is made up of machines called **nodes**, and workloads such as Pods run on worker nodes.[2][3]
 
-bash
+- **Worker Node**: Runs application workloads, including containers packaged inside Pods. A production cluster usually has multiple worker nodes for better scalability and availability.[2][3]
+- **Master / Control Plane**: Manages the cluster, monitors the overall state, schedules workloads, and coordinates cluster operations.[2]
+
+### Kubectl
+
+`kubectl` is the primary CLI used to deploy and manage applications in a Kubernetes cluster. It is also used to check the status of Pods, inspect resources, and apply configuration files.[1][2]
+
+## Alias
+
+Create a short alias for `kubectl`:
+
+```bash
 alias k=kubectl
-Core Commands
+```
+
+> Note: the correct alias syntax is `alias k=kubectl`, not `alias kubectl k`.[2]
+
+## Basic Commands
+
+### 1. Get cluster nodes
+
+```bash
 k get nodes
-Lists all nodes (master + workers) in the cluster with status.
+```
 
+Lists all nodes in the cluster and shows their status, roles, age, and version.[1]
+
+### 2. Run an NGINX Pod
+
+```bash
 k run nginx-pod --image=nginx
-Creates and starts a single pod running the NGINX container.
+```
 
+Creates a Pod named `nginx-pod` using the `nginx` image.[1]
+
+### 3. List Pods
+
+```bash
 k get pods
-Shows all pods, their status (Running, Pending, etc.), and restarts.
+```
 
+Shows Pods in the current namespace along with readiness, status, restart count, and age.[1][2]
+
+### 4. List Pods with node details
+
+```bash
 k get pods -o wide
-Detailed pod view including IP, assigned node, and resource usage.
+```
 
+Displays extended Pod information such as Pod IP, node name, and other scheduling details, which helps identify where Pods are running.[1]
+
+### 5. Create resources from YAML
+
+```bash
 k create -f definition.yaml
-Deploys resources (pods, deployments, etc.) from a YAML file.
+```
 
+Creates Kubernetes resources from the definitions written in a YAML manifest file.[2]
+
+### 6. Describe a Pod
+
+```bash
 k describe pod <pod-name>
-Detailed info on a specific pod: events, status, logs, and issues.
+```
 
-Essential Additional Commands
-k get all
-Overview of all resources: pods, services, deployments, etc.
+Shows detailed information about a Pod, including events, node assignment, container state, image, labels, and troubleshooting details.[1][4]
 
-k delete pod <pod-name>
-Removes a specific pod (recreates if managed by deployment).
+## Additional Useful Commands
 
-k logs <pod-name>
-Views container logs for troubleshooting.
+These commands are commonly used along with the basics above.
 
-k expose pod/nginx-pod --type=NodePort --port=80
-Creates a service to access the pod externally.
+### 7. Apply resources from YAML
 
-k get services
-Lists services and their access ports/URLs.
-
+```bash
 k apply -f definition.yaml
-Creates or updates resources declaratively (preferred over create).
+```
 
-Example Workflow
-Check cluster: k get nodes
+Creates or updates resources from a YAML file. In day-to-day Kubernetes work, `apply` is often preferred for declarative management.[2]
 
-Deploy pod: k run nginx-pod --image=nginx
+### 8. View logs
 
-Verify: k get pods -o wide
+```bash
+k logs <pod-name>
+```
 
-Debug: k describe pod nginx-pod or k logs nginx-pod
+Displays container logs from a Pod, which is useful for troubleshooting application issues.[2]
 
-Expose: k expose pod/nginx-pod --type=NodePort --port=80
+### 9. Delete a Pod
 
-Access: k get services
+```bash
+k delete pod <pod-name>
+```
 
-Pro Tips
-Use k get pods -w to watch changes in real-time.
+Deletes the specified Pod from the cluster.[2]
 
-Save common YAML configs for repeatable deployments.
+### 10. Get all common resources
 
-Always check k get nodes first—unhealthy nodes block pod scheduling.
+```bash
+k get all
+```
+
+Lists common resources in the current namespace, such as Pods, Services, Deployments, and ReplicaSets.[2]
+
+### 11. Watch Pod status continuously
+
+```bash
+k get pods -w
+```
+
+Continuously watches Pod changes in real time, which is useful while creating or debugging workloads.[2]
+
+### 12. Get Pod YAML
+
+```bash
+k get pod <pod-name> -o yaml
+```
+
+Prints the full YAML definition of a Pod, including metadata and status fields.[1]
+
+### 13. Describe a node
+
+```bash
+k describe node <node-name>
+```
+
+Shows detailed information about a node, including capacity, allocatable resources, conditions, and the Pods scheduled on it.[1][4]
+
+## Example YAML
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod
+spec:
+  containers:
+    - name: nginx
+      image: nginx
+      ports:
+        - containerPort: 80
+```
+
+This manifest defines a basic Pod running an NGINX container, and it can be created with `k create -f definition.yaml` or `k apply -f definition.yaml`.[2]
+
+## Notes
+
+- Pods are the smallest deployable units in Kubernetes and typically contain one or more containers.[2]
+- Worker nodes run Pods, while the control plane manages scheduling and cluster coordination.[2][3]
+- `kubectl describe` and `kubectl logs` are two of the most useful commands for debugging.[4][5]
