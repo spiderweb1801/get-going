@@ -157,3 +157,13 @@ This manifest defines a basic Pod running an NGINX container, and it can be crea
 - Pods are the smallest deployable units in Kubernetes and typically contain one or more containers.[2]
 - Worker nodes run Pods, while the control plane manages scheduling and cluster coordination.[2][3]
 - `kubectl describe` and `kubectl logs` are two of the most useful commands for debugging.[4][5]
+
+Update yaml plugin in VSS to allow k8s relted validation at yaml.
+Extention setting> Schema> edit the json to include "kubernetes": "*.yaml" under schemas block.
+
+## Replicaset
+once the definition file is there, create the replicaset using the kubectl commands:
+k create -f rs.yaml
+k scale --replicas=6 -f rs.yaml--> scales to 6 replicas, even the file states to have 3 rs
+k scale --replicas=6 replicaset rn-name
+k replace replicaset -f rs.yaml--> after updating the definition file.
